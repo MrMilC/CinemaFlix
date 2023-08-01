@@ -1,0 +1,483 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="Database1Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Eloadas">
+          <Key>
+            <PropertyRef Name="EloadasID" />
+          </Key>
+          <Property Name="EloadasID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FilmFK" Type="tinyint" Nullable="false" />
+          <Property Name="TeremFK" Type="smallint" Nullable="false" />
+          <Property Name="EloadastipusFK" Type="tinyint" Nullable="false" />
+          <Property Name="IdoSav" Type="char" MaxLength="13" Nullable="false" />
+          <Property Name="Datum" Type="date" Nullable="false" />
+          <Property Name="Nap" Type="nvarchar" MaxLength="15" Nullable="false" />
+          <Property Name="Szinkron" Type="nvarchar" MaxLength="15" Nullable="false" />
+          <Property Name="Felirat" Type="nvarchar" MaxLength="15" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Eloadastipus">
+          <Key>
+            <PropertyRef Name="EloadastipusID" />
+          </Key>
+          <Property Name="EloadastipusID" Type="tinyint" Nullable="false" />
+          <Property Name="Megnevezes" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Ar" Type="decimal" Precision="4" Scale="0" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Film">
+          <Key>
+            <PropertyRef Name="FilmID" />
+          </Key>
+          <Property Name="FilmID" Type="tinyint" Nullable="false" />
+          <Property Name="Cim" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Mufaj" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Hossz_percben" Type="decimal" Precision="3" Scale="0" Nullable="false" />
+          <Property Name="Besorolas" Type="char" MaxLength="3" Nullable="false" />
+          <Property Name="MegjelenesEve" Type="decimal" Precision="4" Scale="0" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Foglalas">
+          <Key>
+            <PropertyRef Name="FoglalasID" />
+          </Key>
+          <Property Name="FoglalasID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EloadasFK" Type="int" Nullable="false" />
+          <Property Name="SzemelyFK" Type="int" Nullable="false" />
+          <Property Name="FoglalasDatum" Type="datetime2" Precision="0" />
+          <Property Name="JegyDarab" Type="decimal" Precision="1" Scale="0" Nullable="false" />
+          <Property Name="FoglalasErtek" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="Kedvezmenyes" Type="bit" />
+        </EntityType>
+        <EntityType Name="Mozi">
+          <Key>
+            <PropertyRef Name="MoziID" />
+          </Key>
+          <Property Name="MoziID" Type="tinyint" Nullable="false" />
+          <Property Name="MoziNev" Type="nvarchar" MaxLength="30" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Szemely">
+          <Key>
+            <PropertyRef Name="SzemelyID" />
+          </Key>
+          <Property Name="SzemelyID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Nev" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Telefonszam" Type="decimal" Precision="9" Scale="0" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Terem">
+          <Key>
+            <PropertyRef Name="TeremID" />
+          </Key>
+          <Property Name="TeremID" Type="smallint" Nullable="false" />
+          <Property Name="TeremNev" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="UlesekSzama" Type="decimal" Precision="2" Scale="0" Nullable="false" />
+          <Property Name="MoziFK" Type="tinyint" Nullable="false" />
+          <Property Name="Borfotel" Type="bit" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Eloadas_ToEloadastipus">
+          <End Role="Eloadastipus" Type="Self.Eloadastipus" Multiplicity="1" />
+          <End Role="Eloadas" Type="Self.Eloadas" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Eloadastipus">
+              <PropertyRef Name="EloadastipusID" />
+            </Principal>
+            <Dependent Role="Eloadas">
+              <PropertyRef Name="EloadastipusFK" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Eloadas_ToFilm">
+          <End Role="Film" Type="Self.Film" Multiplicity="1" />
+          <End Role="Eloadas" Type="Self.Eloadas" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Film">
+              <PropertyRef Name="FilmID" />
+            </Principal>
+            <Dependent Role="Eloadas">
+              <PropertyRef Name="FilmFK" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Eloadas_ToTerem">
+          <End Role="Terem" Type="Self.Terem" Multiplicity="1" />
+          <End Role="Eloadas" Type="Self.Eloadas" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Terem">
+              <PropertyRef Name="TeremID" />
+            </Principal>
+            <Dependent Role="Eloadas">
+              <PropertyRef Name="TeremFK" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Foglalas_ToEloadas">
+          <End Role="Eloadas" Type="Self.Eloadas" Multiplicity="1" />
+          <End Role="Foglalas" Type="Self.Foglalas" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Eloadas">
+              <PropertyRef Name="EloadasID" />
+            </Principal>
+            <Dependent Role="Foglalas">
+              <PropertyRef Name="EloadasFK" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Foglalas_ToSzemely">
+          <End Role="Szemely" Type="Self.Szemely" Multiplicity="1" />
+          <End Role="Foglalas" Type="Self.Foglalas" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Szemely">
+              <PropertyRef Name="SzemelyID" />
+            </Principal>
+            <Dependent Role="Foglalas">
+              <PropertyRef Name="SzemelyFK" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Terem_ToMozi">
+          <End Role="Mozi" Type="Self.Mozi" Multiplicity="1" />
+          <End Role="Terem" Type="Self.Terem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Mozi">
+              <PropertyRef Name="MoziID" />
+            </Principal>
+            <Dependent Role="Terem">
+              <PropertyRef Name="MoziFK" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Database1ModelStoreContainer">
+          <EntitySet Name="Eloadas" EntityType="Self.Eloadas" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Eloadastipus" EntityType="Self.Eloadastipus" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Film" EntityType="Self.Film" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Foglalas" EntityType="Self.Foglalas" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Mozi" EntityType="Self.Mozi" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Szemely" EntityType="Self.Szemely" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Terem" EntityType="Self.Terem" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Eloadas_ToEloadastipus" Association="Self.FK_Eloadas_ToEloadastipus">
+            <End Role="Eloadastipus" EntitySet="Eloadastipus" />
+            <End Role="Eloadas" EntitySet="Eloadas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Eloadas_ToFilm" Association="Self.FK_Eloadas_ToFilm">
+            <End Role="Film" EntitySet="Film" />
+            <End Role="Eloadas" EntitySet="Eloadas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Eloadas_ToTerem" Association="Self.FK_Eloadas_ToTerem">
+            <End Role="Terem" EntitySet="Terem" />
+            <End Role="Eloadas" EntitySet="Eloadas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Foglalas_ToEloadas" Association="Self.FK_Foglalas_ToEloadas">
+            <End Role="Eloadas" EntitySet="Eloadas" />
+            <End Role="Foglalas" EntitySet="Foglalas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Foglalas_ToSzemely" Association="Self.FK_Foglalas_ToSzemely">
+            <End Role="Szemely" EntitySet="Szemely" />
+            <End Role="Foglalas" EntitySet="Foglalas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Terem_ToMozi" Association="Self.FK_Terem_ToMozi">
+            <End Role="Mozi" EntitySet="Mozi" />
+            <End Role="Terem" EntitySet="Terem" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="Database1Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Eloadas">
+          <Key>
+            <PropertyRef Name="EloadasID" />
+          </Key>
+          <Property Name="EloadasID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FilmFK" Type="Byte" Nullable="false" />
+          <Property Name="TeremFK" Type="Int16" Nullable="false" />
+          <Property Name="EloadastipusFK" Type="Byte" Nullable="false" />
+          <Property Name="IdoSav" Type="String" MaxLength="13" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Datum" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Nap" Type="String" MaxLength="15" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Szinkron" Type="String" MaxLength="15" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Felirat" Type="String" MaxLength="15" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Eloadastipus" Relationship="Self.FK_Eloadas_ToEloadastipus" FromRole="Eloadas" ToRole="Eloadastipus" />
+          <NavigationProperty Name="Film" Relationship="Self.FK_Eloadas_ToFilm" FromRole="Eloadas" ToRole="Film" />
+          <NavigationProperty Name="Terem" Relationship="Self.FK_Eloadas_ToTerem" FromRole="Eloadas" ToRole="Terem" />
+          <NavigationProperty Name="Foglalas" Relationship="Database1Model.FK_Foglalas_ToEloadas" FromRole="Eloadas" ToRole="Foglalas" />
+        </EntityType>
+        <EntityType Name="Eloadastipus">
+          <Key>
+            <PropertyRef Name="EloadastipusID" />
+          </Key>
+          <Property Name="EloadastipusID" Type="Byte" Nullable="false" />
+          <Property Name="Megnevezes" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Ar" Type="Decimal" Precision="4" Scale="0" Nullable="false" />
+          <NavigationProperty Name="Eloadas" Relationship="Self.FK_Eloadas_ToEloadastipus" FromRole="Eloadastipus" ToRole="Eloadas" />
+        </EntityType>
+        <EntityType Name="Film">
+          <Key>
+            <PropertyRef Name="FilmID" />
+          </Key>
+          <Property Name="FilmID" Type="Byte" Nullable="false" />
+          <Property Name="Cim" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Mufaj" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Hossz_percben" Type="Decimal" Precision="3" Scale="0" Nullable="false" />
+          <Property Name="Besorolas" Type="String" MaxLength="3" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="MegjelenesEve" Type="Decimal" Precision="4" Scale="0" Nullable="false" />
+          <NavigationProperty Name="Eloadas" Relationship="Self.FK_Eloadas_ToFilm" FromRole="Film" ToRole="Eloadas" />
+        </EntityType>
+        <EntityType Name="Mozi">
+          <Key>
+            <PropertyRef Name="MoziID" />
+          </Key>
+          <Property Name="MoziID" Type="Byte" Nullable="false" />
+          <Property Name="MoziNev" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Terem" Relationship="Self.FK_Terem_ToMozi" FromRole="Mozi" ToRole="Terem" />
+        </EntityType>
+        <EntityType Name="Szemely">
+          <Key>
+            <PropertyRef Name="SzemelyID" />
+          </Key>
+          <Property Name="SzemelyID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Nev" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Telefonszam" Type="Decimal" Precision="9" Scale="0" Nullable="false" />
+          <NavigationProperty Name="Foglalas" Relationship="Database1Model.FK_Foglalas_ToSzemely" FromRole="Szemely" ToRole="Foglalas" />
+        </EntityType>
+        <EntityType Name="Terem">
+          <Key>
+            <PropertyRef Name="TeremID" />
+          </Key>
+          <Property Name="TeremID" Type="Int16" Nullable="false" />
+          <Property Name="TeremNev" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UlesekSzama" Type="Decimal" Precision="2" Scale="0" Nullable="false" />
+          <Property Name="MoziFK" Type="Byte" Nullable="false" />
+          <Property Name="Borfotel" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Eloadas" Relationship="Self.FK_Eloadas_ToTerem" FromRole="Terem" ToRole="Eloadas" />
+          <NavigationProperty Name="Mozi" Relationship="Self.FK_Terem_ToMozi" FromRole="Terem" ToRole="Mozi" />
+        </EntityType>
+        <Association Name="FK_Eloadas_ToEloadastipus">
+          <End Role="Eloadastipus" Type="Self.Eloadastipus" Multiplicity="1" />
+          <End Role="Eloadas" Type="Self.Eloadas" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Eloadastipus">
+              <PropertyRef Name="EloadastipusID" />
+            </Principal>
+            <Dependent Role="Eloadas">
+              <PropertyRef Name="EloadastipusFK" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Eloadas_ToFilm">
+          <End Role="Film" Type="Self.Film" Multiplicity="1" />
+          <End Role="Eloadas" Type="Self.Eloadas" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Film">
+              <PropertyRef Name="FilmID" />
+            </Principal>
+            <Dependent Role="Eloadas">
+              <PropertyRef Name="FilmFK" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Eloadas_ToTerem">
+          <End Role="Terem" Type="Self.Terem" Multiplicity="1" />
+          <End Role="Eloadas" Type="Self.Eloadas" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Terem">
+              <PropertyRef Name="TeremID" />
+            </Principal>
+            <Dependent Role="Eloadas">
+              <PropertyRef Name="TeremFK" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Terem_ToMozi">
+          <End Role="Mozi" Type="Self.Mozi" Multiplicity="1" />
+          <End Role="Terem" Type="Self.Terem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Mozi">
+              <PropertyRef Name="MoziID" />
+            </Principal>
+            <Dependent Role="Terem">
+              <PropertyRef Name="MoziFK" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="CinemaFlixEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Eloadas" EntityType="Self.Eloadas" />
+          <EntitySet Name="Eloadastipus" EntityType="Self.Eloadastipus" />
+          <EntitySet Name="Film" EntityType="Self.Film" />
+          <EntitySet Name="Mozi" EntityType="Self.Mozi" />
+          <EntitySet Name="Szemely" EntityType="Self.Szemely" />
+          <EntitySet Name="Terem" EntityType="Self.Terem" />
+          <AssociationSet Name="FK_Eloadas_ToEloadastipus" Association="Self.FK_Eloadas_ToEloadastipus">
+            <End Role="Eloadastipus" EntitySet="Eloadastipus" />
+            <End Role="Eloadas" EntitySet="Eloadas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Eloadas_ToFilm" Association="Self.FK_Eloadas_ToFilm">
+            <End Role="Film" EntitySet="Film" />
+            <End Role="Eloadas" EntitySet="Eloadas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Eloadas_ToTerem" Association="Self.FK_Eloadas_ToTerem">
+            <End Role="Terem" EntitySet="Terem" />
+            <End Role="Eloadas" EntitySet="Eloadas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Terem_ToMozi" Association="Self.FK_Terem_ToMozi">
+            <End Role="Mozi" EntitySet="Mozi" />
+            <End Role="Terem" EntitySet="Terem" />
+          </AssociationSet>
+          <EntitySet Name="Foglalas" EntityType="Database1Model.Foglalas" />
+          <AssociationSet Name="FK_Foglalas_ToEloadas" Association="Database1Model.FK_Foglalas_ToEloadas">
+            <End Role="Eloadas" EntitySet="Eloadas" />
+            <End Role="Foglalas" EntitySet="Foglalas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Foglalas_ToSzemely" Association="Database1Model.FK_Foglalas_ToSzemely">
+            <End Role="Szemely" EntitySet="Szemely" />
+            <End Role="Foglalas" EntitySet="Foglalas" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Foglalas">
+          <Key>
+            <PropertyRef Name="FoglalasID" />
+          </Key>
+          <Property Name="FoglalasID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EloadasFK" Type="Int32" Nullable="false" />
+          <Property Name="SzemelyFK" Type="Int32" Nullable="false" />
+          <Property Name="FoglalasDatum" Type="DateTime" Precision="0" />
+          <Property Name="JegyDarab" Type="Decimal" Nullable="false" Precision="1" Scale="0" />
+          <Property Name="FoglalasErtek" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="Kedvezmenyes" Type="Boolean" />
+          <NavigationProperty Name="Eloadas" Relationship="Database1Model.FK_Foglalas_ToEloadas" FromRole="Foglalas" ToRole="Eloadas" />
+          <NavigationProperty Name="Szemely" Relationship="Database1Model.FK_Foglalas_ToSzemely" FromRole="Foglalas" ToRole="Szemely" />
+        </EntityType>
+        <Association Name="FK_Foglalas_ToEloadas">
+          <End Type="Database1Model.Eloadas" Role="Eloadas" Multiplicity="1" />
+          <End Type="Database1Model.Foglalas" Role="Foglalas" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Eloadas">
+              <PropertyRef Name="EloadasID" />
+            </Principal>
+            <Dependent Role="Foglalas">
+              <PropertyRef Name="EloadasFK" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Foglalas_ToSzemely">
+          <End Type="Database1Model.Szemely" Role="Szemely" Multiplicity="1" />
+          <End Type="Database1Model.Foglalas" Role="Foglalas" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Szemely">
+              <PropertyRef Name="SzemelyID" />
+            </Principal>
+            <Dependent Role="Foglalas">
+              <PropertyRef Name="SzemelyFK" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="Database1ModelStoreContainer" CdmEntityContainer="CinemaFlixEntities">
+          <EntitySetMapping Name="Eloadas">
+            <EntityTypeMapping TypeName="Database1Model.Eloadas">
+              <MappingFragment StoreEntitySet="Eloadas">
+                <ScalarProperty Name="EloadasID" ColumnName="EloadasID" />
+                <ScalarProperty Name="FilmFK" ColumnName="FilmFK" />
+                <ScalarProperty Name="TeremFK" ColumnName="TeremFK" />
+                <ScalarProperty Name="EloadastipusFK" ColumnName="EloadastipusFK" />
+                <ScalarProperty Name="IdoSav" ColumnName="IdoSav" />
+                <ScalarProperty Name="Datum" ColumnName="Datum" />
+                <ScalarProperty Name="Nap" ColumnName="Nap" />
+                <ScalarProperty Name="Szinkron" ColumnName="Szinkron" />
+                <ScalarProperty Name="Felirat" ColumnName="Felirat" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Eloadastipus">
+            <EntityTypeMapping TypeName="Database1Model.Eloadastipus">
+              <MappingFragment StoreEntitySet="Eloadastipus">
+                <ScalarProperty Name="EloadastipusID" ColumnName="EloadastipusID" />
+                <ScalarProperty Name="Megnevezes" ColumnName="Megnevezes" />
+                <ScalarProperty Name="Ar" ColumnName="Ar" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Film">
+            <EntityTypeMapping TypeName="Database1Model.Film">
+              <MappingFragment StoreEntitySet="Film">
+                <ScalarProperty Name="FilmID" ColumnName="FilmID" />
+                <ScalarProperty Name="Cim" ColumnName="Cim" />
+                <ScalarProperty Name="Mufaj" ColumnName="Mufaj" />
+                <ScalarProperty Name="Hossz_percben" ColumnName="Hossz_percben" />
+                <ScalarProperty Name="Besorolas" ColumnName="Besorolas" />
+                <ScalarProperty Name="MegjelenesEve" ColumnName="MegjelenesEve" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Mozi">
+            <EntityTypeMapping TypeName="Database1Model.Mozi">
+              <MappingFragment StoreEntitySet="Mozi">
+                <ScalarProperty Name="MoziID" ColumnName="MoziID" />
+                <ScalarProperty Name="MoziNev" ColumnName="MoziNev" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Szemely">
+            <EntityTypeMapping TypeName="Database1Model.Szemely">
+              <MappingFragment StoreEntitySet="Szemely">
+                <ScalarProperty Name="SzemelyID" ColumnName="SzemelyID" />
+                <ScalarProperty Name="Nev" ColumnName="Nev" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Telefonszam" ColumnName="Telefonszam" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Terem">
+            <EntityTypeMapping TypeName="Database1Model.Terem">
+              <MappingFragment StoreEntitySet="Terem">
+                <ScalarProperty Name="TeremID" ColumnName="TeremID" />
+                <ScalarProperty Name="TeremNev" ColumnName="TeremNev" />
+                <ScalarProperty Name="UlesekSzama" ColumnName="UlesekSzama" />
+                <ScalarProperty Name="MoziFK" ColumnName="MoziFK" />
+                <ScalarProperty Name="Borfotel" ColumnName="Borfotel" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Foglalas">
+            <EntityTypeMapping TypeName="Database1Model.Foglalas">
+              <MappingFragment StoreEntitySet="Foglalas">
+                <ScalarProperty Name="Kedvezmenyes" ColumnName="Kedvezmenyes" />
+                <ScalarProperty Name="FoglalasErtek" ColumnName="FoglalasErtek" />
+                <ScalarProperty Name="JegyDarab" ColumnName="JegyDarab" />
+                <ScalarProperty Name="FoglalasDatum" ColumnName="FoglalasDatum" />
+                <ScalarProperty Name="SzemelyFK" ColumnName="SzemelyFK" />
+                <ScalarProperty Name="EloadasFK" ColumnName="EloadasFK" />
+                <ScalarProperty Name="FoglalasID" ColumnName="FoglalasID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
