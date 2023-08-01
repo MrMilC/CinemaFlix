@@ -1,0 +1,985 @@
+********** 1. gyak **********
+
+---------- Form1 ----------
+public partial class Form1 : Form
+    {
+        BindingList<Student> students = new BindingList<Student>();
+        public Form1()
+        {
+            InitializeComponent();
+            dgw.DataSource = students;
+        }
+
+        private void BtnSave_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.InitialDirectory = Application.StartupPath;
+            sfd.Filter = "Comma Seperated Values (*.csv)|*.csv";
+            sfd.DefaultExt = "csv";
+            sfd.AddExtension = true;
+
+            if (sfd.ShowDialog() != DialogResult.OK) return;
+
+            using (FileStream file = new FileStream("students.csv", FileMode.Create))
+            {
+                using (StreamWriter writer = new StreamWriter(file))
+                {
+                    foreach (Student student in students)
+                    {
+                        writer.WriteLine("{0};{1};{2};{3};{4}",
+                            student.Neptun, student.Name, student.BirthDate, student.AverageGrade, student.IsActive);
+                    }
+                }
+            }
+         }
+           
+
+        private void BtnLoad_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.InitialDirectory = Application.StartupPath;
+            ofd.Filter = "Comma Seperated Values (*.csv)|*.csv";
+
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+
+            string[] sorok = File.ReadAllLines(ofd.FileName);
+            
+            foreach (string sor in sorok)
+            {
+                string[] oszlopok = sor.Split(';');
+
+                Student student = new Student();
+                student.Neptun = oszlopok[0];
+                student.Name = oszlopok[1];
+                
+                if (DateTime.TryParse(oszlopok[2], out DateTime születés))
+                student.BirthDate = születés;
+
+                if (decimal.TryParse(oszlopok[3], out decimal átlag))
+                    student.AverageGrade = átlag;
+
+                student.IsActive = bool.Parse(oszlopok[4]);
+            }
+
+        }
+    }
+
+---------- Student ----------
+class Student
+    {
+        public string Neptun { get; set; }
+        public string Name { get; set; }
+        public DateTime? BirthDate { get; set; }
+        public decimal AverageGrade { get; set; }
+        public bool IsActive { get; set; }
+
+    }
+
+
+
+
+
+********** 2. gyak **********
+
+---------- Form1 ----------
+StudentEntities context;
+        public Form1()
+        {
+            InitializeComponent();
+            context = new StudentEntities();
+            context.Students.Load();
+            studentBindingSource.DataSource = context.Students.Local;
+
+        }
+
+        private void StudentBindingNavigatorSaveItem_Click(object sender, EventArgs e)
+        {
+            this.Validate();
+            this.studentBindingSource.EndEdit();
+            this.tableAdapterManager.UpdateAll(this.studentDataSet);
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            // TODO: This line of code loads data into the 'studentDataSet.Student' table. You can move, or remove it, as needed.
+            this.studentTableAdapter.Fill(this.studentDataSet.Student);
+
+        }
+
+        private void ToolStripButton1_Click(object sender, EventArgs e)
+        {
+            studentBindingSource.EndEdit();
+
+            try
+            {
+                context.SaveChanges();
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Hiba", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            studentDataGridView.Refresh();
+        }
+
+
+
+
+
+********** 3. gyak **********
+
+---------- Form1 ----------
+public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            Form2 f2 = new Form2();
+            f2.Show();
+        }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            Form3 f3 = new Form3();
+            f3.Show();
+        }
+
+---------- Form2 ----------
+StudiesEntities context = new StudiesEntities();
+        public Form2()
+        {
+            InitializeComponent();
+
+            context.Instructors.Load();
+            context.Status.Load();
+            context.Employements.Load();
+            instructorBindingSource.DataSource = context.Instructors.Local;
+            statusBindingSource.DataSource = context.Status.Local;
+            employementBindingSource.DataSource = context.Employements.Local;
+        }
+
+        private void InstructorBindingNavigatorSaveItem_Click(object sender, EventArgs e)
+        {
+            instructorBindingSource.EndEdit();
+
+            try
+            {
+                context.SaveChanges();      
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            instructorDataGridView.Refresh();
+        }
+
+---------- Form3 ----------
+StudiesEntities context = new StudiesEntities();
+        public Form3()
+        {
+            InitializeComponent();
+            context.Lessons.Load();
+            context.Courses.Load();
+            context.Instructors.Load();
+            context.Days.Load();
+            context.Times.Load();
+            context.Rooms.Load();
+            lessonBindingSource.DataSource = context.Lessons.Local;
+            courseBindingSource.DataSource = context.Courses.Local;
+            instructorBindingSource.DataSource = context.Instructors.Local;
+            dayBindingSource.DataSource = context.Days.Local;
+            timeBindingSource.DataSource = context.Times.Local;
+            roomBindingSource.DataSource = context.Rooms.Local;
+        }
+
+        private void LessonBindingNavigatorSaveItem_Click(object sender, EventArgs e)
+        {
+            lessonBindingSource.EndEdit();
+
+            try
+            {
+                context.SaveChanges();         
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            lessonDataGridView.Refresh();
+        }
+
+
+
+
+
+********** 5. gyak - REGEX **********
+
+---------- Form1 ----------
+StudentEntities context = new StudentEntities();
+        public Form1()
+        {
+            InitializeComponent();
+
+            context.People.Load();
+            personBindingSource.DataSource = context.People.Local;
+
+            newrecbtn.Text = "\uE710";
+        }
+
+        private void Newrecbtn_Click(object sender, EventArgs e)
+        {
+            NewPersonForm npf = new NewPersonForm();
+            DialogResult result = npf.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                Person person = new Person();
+
+                person.Name = npf.nameTextBox.Text;
+                person.PersonalNumber = npf.personalNumberTextBox.Text;
+                person.TaxNumber = npf.taxNumberTextBox.Text;
+                person.Neptun = npf.neptunTextBox.Text;
+                person.PhoneNumber = npf.phoneNumberTextBox.Text;
+                person.Email = npf.emailTextBox.Text;
+
+                personBindingSource.Add(person);
+            }
+        }
+
+        private void personBindingNavigatorSaveItem_Click(object sender, EventArgs e)
+        {
+            personBindingSource.EndEdit();
+
+            try
+            {
+                context.SaveChanges();
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            personDataGridView.Refresh();
+        }
+
+---------- NewPersonForm ----------
+public NewPersonForm()
+        {
+            InitializeComponent();
+        }
+
+        private void nameTextBox_TextChanged(object sender, EventArgs e)
+        {
+            this.Validate();
+        }
+
+        private void nameTextBox_Validating(object sender, CancelEventArgs e)
+        {
+            Regex regex = new Regex(@"^(?!\s*$).+");
+
+            if (regex.IsMatch(nameTextBox.Text))
+            {
+                e.Cancel = false;
+
+                if (!String.IsNullOrWhiteSpace(nameTextBox.Text))
+                    nameTextBox.BackColor = Color.LightGreen;
+            }
+
+            else
+            {
+                e.Cancel = true;
+                nameTextBox.BackColor = Color.MediumVioletRed;
+            }
+        }
+
+        private void personalNumberTextBox_Validating(object sender, CancelEventArgs e)
+        {
+            Regex regex = new Regex("(^[A-Z]{2}-?[0-9]{6}$)|(^[0-9]{6}-?[A-Z]{2}$)");
+
+            if (regex.IsMatch(personalNumberTextBox.Text))
+            {
+                e.Cancel = false;
+
+                if (!String.IsNullOrWhiteSpace(personalNumberTextBox.Text))
+                    personalNumberTextBox.BackColor = Color.LightGreen;
+                else
+                    personalNumberTextBox.BackColor = Color.White;
+            }
+
+            else
+            {
+                e.Cancel = true;
+                personalNumberTextBox.BackColor = Color.MediumVioletRed;
+            }
+        }
+
+        private void taxNumberTextBox_Validating(object sender, CancelEventArgs e)
+        {
+            Regex regex = new Regex(@"^[0-9]{8}-[0-9]-[0-9]{2}$");
+
+            if (regex.IsMatch(taxNumberTextBox.Text))
+            {
+                e.Cancel = false;
+
+                if (!String.IsNullOrWhiteSpace(taxNumberTextBox.Text))
+                    taxNumberTextBox.BackColor = Color.LightGreen;
+                else
+                    taxNumberTextBox.BackColor = Color.White;
+            }
+
+            else
+            {
+                e.Cancel = true;
+                taxNumberTextBox.BackColor = Color.MediumVioletRed;
+            }
+        }
+
+        private void neptunTextBox_Validating(object sender, CancelEventArgs e)
+        {
+            Regex regex = new Regex(@"^[0-9A-Z]{6}$");
+
+            if (regex.IsMatch(neptunTextBox.Text))
+            {
+                e.Cancel = false;
+
+                if (!String.IsNullOrWhiteSpace(neptunTextBox.Text))
+                    neptunTextBox.BackColor = Color.LightGreen;
+                else
+                    neptunTextBox.BackColor = Color.White;
+            }
+
+            else
+            {
+                e.Cancel = true;
+                neptunTextBox.BackColor = Color.MediumVioletRed;
+            }
+        }
+
+        private void phoneNumberTextBox_Validating(object sender, CancelEventArgs e)
+        {
+            Regex regex = new Regex(@"^(\+36|06)(-|/)[0-9]{1,2}-[0-9]{3}-?[0-9]{3,4}$");
+
+            if (regex.IsMatch(phoneNumberTextBox.Text))
+            {
+                e.Cancel = false;
+
+                if (!String.IsNullOrWhiteSpace(phoneNumberTextBox.Text))
+                    phoneNumberTextBox.BackColor = Color.LightGreen;
+                else
+                    phoneNumberTextBox.BackColor = Color.White;
+            }
+
+            else
+            {
+                e.Cancel = true;
+                phoneNumberTextBox.BackColor = Color.MediumVioletRed;
+            }
+        }
+
+        private void emailTextBox_Validating(object sender, CancelEventArgs e)
+        {
+            Regex regex = new Regex(@"(^$)|(^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$)");
+
+            if (regex.IsMatch(emailTextBox.Text))
+            {
+                e.Cancel = false;
+
+                if (!String.IsNullOrWhiteSpace(emailTextBox.Text))
+                    emailTextBox.BackColor = Color.LightGreen;
+                else
+                    emailTextBox.BackColor = Color.White;
+            }
+
+            else
+            {
+                e.Cancel = true;
+                emailTextBox.BackColor = Color.MediumVioletRed;
+            }
+        }
+
+
+
+
+
+********** 6. gyak - LINQ **********
+
+---------- Form1 ----------
+private void button1_Click(object sender, EventArgs e)
+        {
+            panel1.Controls.Clear();
+            UserControl userControl1 = new UserControl1();
+            panel1.Controls.Add(userControl1);
+            userControl1.Dock = DockStyle.Fill;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            panel1.Controls.Clear();
+            UserControl userControl2 = new UserControl2();  
+            panel1.Controls.Add(userControl2);
+            userControl2.Dock = DockStyle.Fill;
+        }
+
+---------- UserControl1 ----------
+StudiesEntities context = new StudiesEntities();
+        public UserControl1()
+        {
+            InitializeComponent();
+
+            FillDataSource();
+            listBox1.DisplayMember = "Name";
+        }
+
+        private void FillDataSource()
+        {
+            listBox1.DataSource = (from i in context.Instructors
+                                   where i.Name.Contains(textBox1.Text)
+                                   select i).ToList();
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            FillDataSource();
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Instructor instructor = (Instructor)listBox1.SelectedItem;
+
+            var lessons = from l in context.Lessons
+                          where l.InstructorFK == instructor.InstructorSK
+                          select new
+                          {
+                              Kurzus = l.Course.Name,
+                              Nap = l.Day.Name,
+                              Sáv = l.Time.Name
+                          };
+
+            dataGridView1.DataSource = lessons.ToList();
+        }
+
+---------- UserControl2 ----------
+StudiesEntities context = new StudiesEntities();
+        public UserControl2()
+        {
+            InitializeComponent();
+
+            FillDataSource();
+            listBox1.DisplayMember = "Name";
+        }
+
+        private void FillDataSource()
+        {
+            listBox1.DataSource = (from c in context.Courses
+                                   where c.Name.Contains(textBox1.Text)
+                                   select c).ToList();
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            FillDataSource();
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Course course = (Course)((ListBox)sender).SelectedItem;
+
+            dataGridView1.DataSource = (from l in context.Lessons
+                                        where l.CourseFK == course.CourseSK
+                                        select new
+                                        {
+                                            Nap = l.Day.Name,
+                                            Sáv = l.Time.Name,
+                                            Oktató = l.Instructor.Name
+                                        }).ToList();
+        }
+
+
+
+
+
+********** 6. gyak B - LINQ **********
+
+---------- Form1 ----------
+Database1Entities context = new Database1Entities();
+        public Form1()
+        {
+            InitializeComponent();
+
+            Ügyfélszűrés();
+        }
+
+        void Ügyfélszűrés()
+        {
+            listBox1.DataSource = (from i in context.Ugyfels
+                                  where i.NEV.Contains(textBox1.Text)
+                                  select i).ToList();
+
+            listBox1.DisplayMember = "NEV";
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            Ügyfélszűrés();
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var LOGIN = ((Ugyfel)listBox1.SelectedItem).LOGIN;
+            var rendelések = from x in context.Rendeles where x.LOGIN == LOGIN select x;
+            listBox2.DisplayMember = "REND_DATUM";
+            listBox2.DataSource = rendelések.ToList();
+        }
+
+        private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var SORSZAM = ((Rendele)listBox2.SelectedItem).SORSZAM;
+            var rendelésiTételek = from x in context.Rendeles_tetel
+                                   where x.SORSZAM == SORSZAM
+                                   select new
+                                   {
+                                       Teméknév = x.Termek.MEGNEVEZES,
+                                       Kategória = x.Termek.Termekkategoria.KAT_NEV,
+                                       Egységár = x.EGYSEGAR,
+                                       Megység = x.Termek.MEGYS,
+                                       Mennyiség = x.MENNYISEG,
+                                       Ár = x.MENNYISEG * x.EGYSEGAR
+                                   };
+            dataGridView1.DataSource = rendelésiTételek.ToList();
+
+            var összesen = (from x in rendelésiTételek select x.Ár).Sum();
+            
+        }
+
+
+
+
+
+********** 7. gyak - Tankönyvtámogatás **********
+
+---------- Form1 ----------
+Database1Entities context = new Database1Entities();
+        public Form1()
+        {
+            InitializeComponent();
+
+            context.Students.Load();
+            context.Textbooks.Load();
+            context.Orders.Load();
+
+            listStudent.DisplayMember = "Name";
+            listTextBook.DisplayMember = "Title";
+
+            // Erre a két sorra a későbbi rendelés lekérdezéskor lesz majd szükség
+            listOrder.DisplayMember = "Title";
+            listOrder.ValueMember = "OrderSK";
+
+            GetStudents();
+            GetTextbooks();
+            GetOrders();
+
+            listOrder.ValueMember = "OrderSK";
+        }
+
+        private void GetStudents()
+        {
+            listStudent.DataSource =
+                    (
+                        from s in context.Students
+                        where s.Name.Contains(txtStudent.Text)
+                        select s
+                    ).ToList();
+        }
+
+        private void GetTextbooks()
+        {
+            listTextBook.DataSource =
+                    (
+                        from t in context.Textbooks
+                        where t.Title.Contains(txtTextBook.Text)
+                        select t
+                    ).ToList();
+        }
+
+        private void txtStudent_TextChanged(object sender, EventArgs e)
+        {
+            GetStudents();
+        }
+
+        private void txtTextBook_TextChanged(object sender, EventArgs e)
+        {
+            GetTextbooks();
+        }
+
+        private void GetOrders()
+        {
+            Student student = (Student)listStudent.SelectedItem;
+            var ol = from x in context.Orders
+                     where x.StudentFK == student.StudentID
+                     select new
+                     {
+                         x.OrderSK,
+                         x.StudentFK,
+                         x.Textbook.Title
+                     };
+            listOrder.DataSource = ol.ToList();
+
+            double aidSum = double.Parse(TamOssz.Text);
+            double? orderSum = (from x in context.Orders
+                                select x.Textbook.Price).Sum();
+            double? studentSum = (from x in context.Orders
+                                  where x.StudentFK == student.StudentID
+                                  select x.Textbook.Price).Sum();
+
+            RenOssz.Text = orderSum.ToString();
+            HallRenErt.Text = studentSum.ToString();
+            TamFor.Text = (aidSum / orderSum).ToString();
+            HallJutTam.Text = (studentSum * aidSum / orderSum).ToString();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Student student = (Student)listStudent.SelectedItem;
+            Textbook textbook = (Textbook)listTextBook.SelectedItem;
+
+            Order o = new Order();
+            o.StudentFK = student.StudentID;
+            o.TextbookFK = textbook.TextbookID;
+            context.Orders.Local.Add(o);
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            GetOrders();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            int oID = Convert.ToInt32(listOrder.SelectedValue);
+            var od = from x in context.Orders
+                     where x.OrderSK == oID
+                     select x;
+            context.Orders.Remove(od.FirstOrDefault());
+            context.SaveChanges();
+            GetOrders();
+        }
+
+        private void TamOssz_TextChanged(object sender, EventArgs e)
+        {
+            GetOrders();
+        }
+
+        private void listStudent_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            GetOrders();
+        }
+
+
+
+
+
+********** 9. gyak - Receptek **********
+
+---------- Form1 ----------
+	ReceptDatabaseEntities context = new ReceptDatabaseEntities();
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void nyersanyagListazas()
+        {
+            var hv = from x in context.Nyersanyagoks
+                     where x.NyersanyagNev.Contains(textBox2.Text)
+                     select x;
+
+            hozzávalóListBox.DataSource = hv.ToList();
+            hozzávalóListBox.DisplayMember = "NyersanyagNev";
+        }
+
+        private void fogasListazas()
+        {
+            var hv = from x in context.Fogasoks
+                     where x.FogasNev.Contains(textBox1.Text)
+                     select x;
+
+            fogásListBox.DataSource = hv.ToList();
+            fogásListBox.DisplayMember = "FogasNev";
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            nyersanyagListazas();
+            fogasListazas();
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            nyersanyagListazas();
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            fogasListazas();
+        }
+
+        private void fogásListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var hozzávalók = from x in context.Recepteks
+                             where x.FogasID == ((Fogasok)fogásListBox.SelectedItem).FogasID
+                             select new
+                             {
+                                 x.ReceptID,
+                                 x.FogasID,
+                                 x.Nyersanyagok.NyersanyagNev,
+                                 x.Mennyiseg_4fo,
+                                 x.Nyersanyagok.MennyisegiEgysegek.EgysegNev,
+                                 Ar = x.Mennyiseg_4fo * x.Nyersanyagok.NyersanyagID
+                             };
+
+            bindingSource1.DataSource = hozzávalók.ToList();
+        }
+
+        private void hozzávalóListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            label1.Text = ((Nyersanyagok)hozzávalóListBox.SelectedItem).MennyisegiEgysegek.EgysegNev;
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Receptek r = new Receptek();
+            r.NyersanyagID = ((Nyersanyagok)hozzávalóListBox.SelectedItem).NyersanyagID;
+            r.FogasID = ((Fogasok)fogásListBox.SelectedItem).FogasID;
+            double m;
+            if (!double.TryParse(textBox3.Text, out m)) return;
+            r.Mennyiseg_4fo = m;
+            context.Recepteks.Add(r);
+            context.SaveChanges();
+            fogasListazas();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            dynamic aktuális = bindingSource1.Current;
+            int rid = aktuális.ReceptID;
+            var törlendő = (from x in context.Recepteks
+                            where x.ReceptID == rid
+                            select x).FirstOrDefault();
+            context.Recepteks.Remove(törlendő);
+            context.SaveChanges();
+            fogasListazas();
+        }
+
+
+
+
+
+********** 10. gyak - Big Brother B **********
+
+---------- AppTime ----------
+class AppTime
+    {
+        public string ApplicationName { get; set; }
+        public int Time { get; set; }
+    }
+
+
+
+---------- Form1 ----------
+SoftwareUsageEntities context = new SoftwareUsageEntities();
+        public Form1()
+        {
+            InitializeComponent();
+
+            GetLogins();
+        }
+
+        private void GetLogins()
+        {
+            var logins = from x in context.SoftwareUsages
+                         where x.Login.Contains(txtLoginFilter.Text)
+                         select x.Login;
+            listLogin.DataSource = logins
+                .Distinct()
+                .ToList();
+        }
+
+        private void txtLoginFilter_TextChanged(object sender, EventArgs e)
+        {
+            GetLogins();
+        }
+
+        private void listLogin_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var selectedLogin = (string)listLogin.SelectedItem;
+            var applicationData = from x in context.SoftwareUsages where x.Login == selectedLogin select x;   
+            softwareUsageBindingSource.DataSource = applicationData.ToList();
+
+            var appTimes = from x in applicationData
+                           group x by new { x.ApplicationName } into g
+                           select new AppTime()
+                           {
+                               ApplicationName = g.Key.ApplicationName,
+                               Time = (from x in g select x.Time).Sum()
+                           };
+            appTimeBindingSource.DataSource = appTimes.ToList();
+            chart1.DataBind();
+        }
+
+
+
+
+
+********** 10. gyak - Big Brother A **********
+
+---------- Form1 ----------
+SoftwareUsageEntities context = new SoftwareUsageEntities();
+        public Form1()
+        {
+            InitializeComponent();
+
+            BigBrother bb = new BigBrother();
+            bb.AblakVáltás += Bb_AblakVáltás;
+        }
+
+        private void Bb_AblakVáltás(object sender, AlkalmazásHasználatEventArgs e)
+        {
+            if (e.Ablakcím == null ||
+                e.AlkalmazásNév == null ||
+                e.LoginNév == null)
+                return;
+
+            SoftwareUsage s = new SoftwareUsage();
+            s.WindowTitle = e.Ablakcím;
+            s.ApplicationName = e.AlkalmazásNév;
+            s.Login = e.LoginNév;
+            s.Time = (int)e.Idő;
+            context.SoftwareUsages.Add(s);
+            context.SaveChanges();
+        }
+
+
+
+---------- BigBrother ----------
+public delegate void AblakVáltásEventArgs(object sender, AlkalmazásHasználatEventArgs e);
+
+    public partial class BigBrother : Form
+    {
+
+        [DllImport("user32.dll")]
+        static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
+
+        [DllImport("user32.dll")]
+        static extern UInt32 GetWindowThreadProcessId(IntPtr hWnd, out Int32 lpdwProcessId);
+
+        private string utolsóAbalkcím;
+        private string utolsóAlakalmazásNév;
+        private string utolsóLoginNév;
+        private DateTime utolsóVáltozásIdőpontja;
+
+        public BigBrother()
+        {
+            InitializeComponent();
+            this.Show();
+            this.TopMost = true;
+            utolsóVáltozásIdőpontja = DateTime.Now;
+        }
+
+        public event AblakVáltásEventArgs AblakVáltás;
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            string aktuálisAblakCím = GetAktívAblakCím();
+            string aktuálisAlkalmazásNév = GetAktívAlkalmazásNév();
+            string aktuálisLoginNév = GetAktívLoginNév();
+
+            if (aktuálisAblakCím != utolsóAbalkcím || aktuálisAlkalmazásNév != utolsóAlakalmazásNév || aktuálisLoginNév != utolsóLoginNév)
+            {
+                AlkalmazásHasználatEventArgs ah = new AlkalmazásHasználatEventArgs();
+
+                ah.Ablakcím = utolsóAbalkcím;
+                ah.AlkalmazásNév = utolsóAlakalmazásNév;
+                ah.LoginNév = utolsóLoginNév;
+
+                TimeSpan elteltIdő = DateTime.Now - utolsóVáltozásIdőpontja;
+
+                ah.Idő = elteltIdő.TotalSeconds;
+
+                utolsóLoginNév = aktuálisLoginNév;
+                utolsóAlakalmazásNév = aktuálisAlkalmazásNév;
+                utolsóAbalkcím = aktuálisAblakCím;
+                utolsóVáltozásIdőpontja = DateTime.Now;
+
+                AblakVáltás(this, ah);
+
+                labelTitle.Text = aktuálisAblakCím;
+                labelApp.Text = aktuálisAlkalmazásNév;
+                labelUser.Text = aktuálisLoginNév;
+            }
+        }
+
+        private string GetAktívLoginNév()
+        {
+            return WindowsIdentity.GetCurrent().Name;
+        }
+
+        private string GetAktívAlkalmazásNév()
+        {
+            IntPtr handle = IntPtr.Zero;
+            handle = GetForegroundWindow();
+
+            string appProcessName = "?";
+
+            try
+            {
+                appProcessName = Process.GetProcessById(GetWindowProcessID(handle)).ProcessName;
+            }
+            catch
+            {
+            }
+
+            return appProcessName;
+        }
+
+        private string GetAktívAblakCím()
+        {
+            const int nChars = 256;
+            IntPtr handle = IntPtr.Zero;
+            StringBuilder Buff = new StringBuilder(nChars);
+            handle = GetForegroundWindow();
+
+            if (GetWindowText(handle, Buff, nChars) > 0)
+            {
+                return Buff.ToString();
+            }
+            return null;
+        }
+
+        private Int32 GetWindowProcessID(IntPtr hwnd)
+        {
+            Int32 pid = 1;
+            GetWindowThreadProcessId(hwnd, out pid);
+            return pid;
+        }
+    }
+
+    public class AlkalmazásHasználatEventArgs
+    {
+        public string AlkalmazásNév;
+        public string Ablakcím;
+        public string LoginNév;
+        public double Idő;
+    }
